@@ -16,8 +16,8 @@
 *
 *********************************************************/
 
-#ifndef _MLSOCK_H
-#define _MLSOCK_H
+#ifndef _MLUUID_H
+#define _MLUUID_H
 
 // Disable Visual Studio warnings
 #ifdef WIN32

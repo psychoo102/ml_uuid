@@ -208,7 +208,7 @@ static void* pluaL_pushresult = 0;
   p ## x = dlsym(dl, #x); \
   if (p ## x == 0) \
   { \
-    pModuleManager->Printf("[Sockets] Unable to import " #x ": %s\n", dlerror()); \
+    pModuleManager->Printf("[UUID] Unable to import " #x ": %s\n", dlerror()); \
     return false; \
   }
 
@@ -224,7 +224,7 @@ bool ImportLua()
 #endif
   if (!dl)
   {
-    pModuleManager->ErrorPrintf("[Sockets] Unable to open deathmatch.so: %s\n", dlerror());
+    pModuleManager->ErrorPrintf("[UUID] Unable to open deathmatch.so: %s\n", dlerror());
     return false;
   }
 

@@ -18,7 +18,6 @@
 
 #include "ml_uuid.h"
 #include "luaimports.h"
-#include <signal.h>
 #include <cstring>
 
 ILuaModuleManager10 *pModuleManager = NULL;
