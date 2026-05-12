@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CMakePresets.json" />
+    <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="luaimports\luaimports.h">

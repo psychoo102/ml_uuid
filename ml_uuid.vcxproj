@@ -273,6 +273,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CMakePresets.json" />
+    <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ml_uuid.rc" />

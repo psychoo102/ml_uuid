@@ -29,7 +29,7 @@
 /** MODULE SPECIFIC INFORMATION **/
 #define MODULE_NAME			"UUID Module"
 #define	MODULE_AUTHOR		"psychoo102"
-#define MODULE_VERSION		1.0f
+#define MODULE_VERSION		1.1f
 
 // Include default MTA module SDK includes
 #include "Common.h"

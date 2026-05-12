@@ -1,0 +1,16 @@
+{
+  "name": "ml-uuid",
+  "version": "1.1.0",
+  "description": "ml_uuid module for MTA:SA",
+  "dependencies": [
+    {
+      "name": "boost",
+      "version>=": "1.83.0",
+      "features": [
+        "uuid"
+      ],
+      "default-features": false
+    }
+  ],
+  "supports": ""
+}
