@@ -1,77 +1,81 @@
 {
   "version": 3,
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 14
-  },
   "configurePresets": [
     {
+      "name": "base",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_STANDARD": "17",
+        "Boost_NO_BOOST_CMAKE": "ON",
+        "CMAKE_TOOLCHAIN_FILE": {
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "type": "FILEPATH"
+        }
+      }
+    },
+    {
       "name": "win32-debug",
+      "inherits": "base",
       "displayName": "Windows 32-bit Debug (MTA)",
       "generator": "Visual Studio 17 2022",
       "architecture": "Win32",
-      "toolset": "v143",
-      "binaryDir": "${projectDir}/build/win32-debug",
+      "binaryDir": "${sourceDir}/build/win32-debug",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x86-windows",
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_STANDARD": "17"
+        "VCPKG_TARGET_TRIPLET": "x86-windows-static"
       }
     },
     {
       "name": "win32-release",
+      "inherits": "base",
       "displayName": "Windows 32-bit Release (MTA)",
-      "inherits": "win32-debug",
-      "binaryDir": "${projectDir}/build/win32-release",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "Win32",
+      "binaryDir": "${sourceDir}/build/win32-release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "VCPKG_TARGET_TRIPLET": "x86-windows-static"
       }
     },
-
     {
       "name": "linux-x64-debug",
+      "inherits": "base",
       "displayName": "Linux x64 Debug",
       "generator": "Ninja",
-      "binaryDir": "${projectDir}/build/linux-x64-debug",
+      "binaryDir": "${sourceDir}/build/linux-x64-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_STANDARD": "17",
-        "VCPKG_TARGET_TRIPLET": "x64-linux",
-        "CMAKE_MAKE_PROGRAM": "/usr/bin/ninja"
+        "VCPKG_TARGET_TRIPLET": "x64-linux"
       }
     },
     {
       "name": "linux-x64-release",
+      "inherits": "base",
       "displayName": "Linux x64 Release",
-      "inherits": "linux-x64-debug",
-      "binaryDir": "${projectDir}/build/linux-x64-release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/linux-x64-debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "VCPKG_TARGET_TRIPLET": "x64-linux"
       }
     }
   ],
-
   "buildPresets": [
     {
       "name": "win32-debug",
-      "configurePreset": "win32-debug",
-      "displayName": "Windows 32-bit Debug"
+      "configurePreset": "win32-debug"
     },
     {
       "name": "win32-release",
-      "configurePreset": "win32-release",
-      "displayName": "Windows 32-bit Release"
+      "configurePreset": "win32-release"
     },
     {
       "name": "linux-x64-debug",
-      "configurePreset": "linux-x64-debug",
-      "displayName": "Linux x64 Debug"
+      "configurePreset": "linux-x64-debug"
     },
     {
       "name": "linux-x64-release",
-      "configurePreset": "linux-x64-release",
-      "displayName": "Linux x64 Release"
+      "configurePreset": "linux-x64-release"
     }
   ]
 }

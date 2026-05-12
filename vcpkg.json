@@ -2,10 +2,8 @@
   "name": "ml-uuid",
   "version": "1.1.1",
   "dependencies": [
-    {
-      "name": "boost-uuid",
-      "version>=": "1.83.0"
-    }
+    "boost-uuid",
+    "boost-cmake"
   ],
   "builtin-baseline": "2b6c40a61d89cd402f8895f17f7f41bc407ee628"
 }
