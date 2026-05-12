@@ -26,6 +26,9 @@ target_include_directories(lua51 INTERFACE
     "${CMAKE_SOURCE_DIR}/luaimports"
 )
 
+find_package(Boost REQUIRED COMPONENTS uuid)
+target_link_libraries(ml_uuid PRIVATE Boost::uuid)
+
 target_link_libraries(lua51 INTERFACE "${LUA_LIBRARY}")
 
 add_subdirectory(luaimports)
