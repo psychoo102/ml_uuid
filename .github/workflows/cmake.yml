@@ -1,0 +1,80 @@
+name: CMake Build and Release
+
+on:
+  push:
+    branches: [ "main", "master" ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        build_type: [Release]
+        include:
+          - os: windows-latest
+            triplet: x86-windows
+            generator: "Visual Studio 17 2022"
+            arch: Win32
+            artifact_name: "ml_uuid-win32"
+            extension: ".dll"
+          - os: ubuntu-latest
+            triplet: x64-linux
+            generator: "Ninja"
+            artifact_name: "ml_uuid-linux-x64"
+            extension: ".so"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      # === vcpkg ===
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommitId: 'master'   # lub konkretny commit
+          vcpkgJsonGlob: 'vcpkg.json'
+
+      # === Configure CMake ===
+      - name: Configure CMake
+        run: >
+          cmake -B ${{ github.workspace }}/build
+          -G "${{ matrix.generator }}"
+          -A ${{ matrix.arch }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
+          -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+          -S ${{ github.workspace }}
+
+      # === Build ===
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }}
+
+      # === Upload artifacts (do Actions) ===
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}-${{ matrix.build_type }}
+          path: |
+            build/ml_uuid${{ matrix.extension }}
+            build/Release/ml_uuid${{ matrix.extension }}
+            build/**/ml_uuid${{ matrix.extension }}
+          if-no-files-found: warn
+
+      # === Upload do GitHub Release ===
+      - name: Upload to Release
+        if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/ml_uuid${{ matrix.extension }}
+            build/Release/ml_uuid${{ matrix.extension }}
+            build/**/ml_uuid${{ matrix.extension }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
