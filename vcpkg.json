@@ -5,6 +5,9 @@
     {
       "name": "boost",
       "version>=": "1.83.0"
+    },
+    {
+      "name": "boost-uuid"
     }
   ],
   "builtin-baseline": "2b6c40a61d89cd402f8895f17f7f41bc407ee628"
