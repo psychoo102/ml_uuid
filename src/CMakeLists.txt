@@ -1,6 +1,8 @@
 file(GLOB SOURCES "*.cpp" "*.c")
 
-add_library(ml_uuid SHARED ${SOURCES})
+file(GLOB LUA_IMPORTS "${CMAKE_SOURCE_DIR}/luaimports/*.cpp")
+
+add_library(ml_uuid SHARED ${SOURCES} ${LUA_IMPORTS})
 
 # ... (reszta Twojego CMakeLists)
 
