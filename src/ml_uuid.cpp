@@ -57,6 +57,11 @@ MTAEXPORT void RegisterFunctions ( lua_State * luaVM )
 	}
 }
 
+MTAEXPORT bool DoPulse()
+{
+	return true;
+}
+
 MTAEXPORT bool ShutdownModule ( void )
 {
 	return true;
