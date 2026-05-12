@@ -13,3 +13,6 @@ find_package(Boost REQUIRED COMPONENTS uuid)
 
 add_subdirectory(luaimports)
 add_subdirectory(src)
+
+set_target_properties(ml_uuid PROPERTIES PREFIX "")
+set_target_properties(ml_uuid PROPERTIES OUTPUT_NAME "ml_uuid")
