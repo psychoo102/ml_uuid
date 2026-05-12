@@ -56,24 +56,7 @@ MTAEXPORT void RegisterFunctions ( lua_State * luaVM )
 	}
 }
 
-MTAEXPORT void PlayerJoined ( lua_State * luaVM, int iPlayerID, char* szPlayerName )
-{
-
-}
-
-MTAEXPORT bool DoPulse ( void )
-{
-	return true;
-}
-
-
-MTAEXPORT void ResourceStopped ( lua_State * luaVM )
-{
-}
-
-
 MTAEXPORT bool ShutdownModule ( void )
 {
-    // Stop all sockets before shutting down the module
 	return true;
 }

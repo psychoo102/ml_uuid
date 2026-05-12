@@ -272,15 +272,15 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="build-32.sh" />
-    <None Include="build-64.sh" />
-    <None Include="configure.ac" />
-    <None Include="Makefile.am" />
-    <None Include="luaimports\Makefile.am" />
-    <None Include="src\Makefile.am" />
+    <None Include="CMakePresets.json" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ml_uuid.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+    <Text Include="luaimports\CMakeLists.txt" />
+    <Text Include="src\CMakeLists.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

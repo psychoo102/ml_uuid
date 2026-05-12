@@ -90,24 +90,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="configure.ac">
-      <Filter>Other Files</Filter>
-    </None>
-    <None Include="Makefile.am">
-      <Filter>Other Files</Filter>
-    </None>
-    <None Include="luaimports\Makefile.am">
-      <Filter>Other Files\luaimports</Filter>
-    </None>
-    <None Include="src\Makefile.am">
-      <Filter>Other Files\src</Filter>
-    </None>
-    <None Include="build-32.sh">
-      <Filter>Other Files</Filter>
-    </None>
-    <None Include="build-64.sh">
-      <Filter>Other Files</Filter>
-    </None>
+    <None Include="CMakePresets.json" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="luaimports\luaimports.h">
@@ -116,5 +99,10 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ml_uuid.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+    <Text Include="luaimports\CMakeLists.txt" />
+    <Text Include="src\CMakeLists.txt" />
   </ItemGroup>
 </Project>

@@ -1,11 +1,8 @@
 #include "CFunctions.h"
 #include <random>
-#include <uuid.h>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
-
-using namespace uuids;
 
 // ====================== UUID v4 ======================
 int CFunctions::uuid4(lua_State* luaVM)

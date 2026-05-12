@@ -34,8 +34,8 @@
 // Include default MTA module SDK includes
 #include "Common.h"
 #include "CFunctions.h"
-#include "include/ILuaModuleManager.h"
-#include "include/CLuaArguments.h"
+#include "ILuaModuleManager.h"
+#include "CLuaArguments.h"
 
 // Tie the project together
 

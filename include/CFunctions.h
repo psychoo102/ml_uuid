@@ -24,7 +24,7 @@ class CFunctions;
 #include <stdio.h>
 
 #include "ml_uuid.h"
-#include "include/ILuaModuleManager.h"
+#include "ILuaModuleManager.h"
 extern ILuaModuleManager10 *pModuleManager;
 
 class CFunctions
