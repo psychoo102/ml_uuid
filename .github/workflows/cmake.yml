@@ -53,7 +53,7 @@ jobs:
         run: >
           cmake -B ${{ github.workspace }}/build
           -G "${{ matrix.generator }}"
-          ${{ matrix.os == 'windows-latest' && format('-A {0}', matrix.arch) || '' }}
+          ${{ matrix.os == 'windows-latest' && format('-A {0}', matrix.arch) }}
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
           -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
