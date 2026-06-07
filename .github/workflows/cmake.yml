@@ -55,7 +55,7 @@ jobs:
 
       # Build via preset
       - name: Build
-        run: cmake --build --preset ${{ matrix.preset }}
+        run: cmake --build --preset ${{ matrix.preset }} --config Release
 
       # Upload artifact
       - name: Upload Artifact
