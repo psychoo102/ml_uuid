@@ -17,7 +17,7 @@
       "name": "win32-debug",
       "inherits": "base",
       "displayName": "Windows 32-bit Debug (MTA)",
-      "generator": "Visual Studio 17 2022",
+      "generator": "Visual Studio 18 2026",
       "architecture": "Win32",
       "binaryDir": "${sourceDir}/build/win32-debug",
       "cacheVariables": {
@@ -29,7 +29,7 @@
       "name": "win32-release",
       "inherits": "base",
       "displayName": "Windows 32-bit Release (MTA)",
-      "generator": "Visual Studio 17 2022",
+      "generator": "Visual Studio 18 2026",
       "architecture": "Win32",
       "binaryDir": "${sourceDir}/build/win32-release",
       "cacheVariables": {
@@ -41,7 +41,7 @@
       "name": "win64-release",
       "inherits": "base",
       "displayName": "Windows 64-bit Release (MTA)",
-      "generator": "Visual Studio 17 2022",
+      "generator": "Visual Studio 18 2026",
       "architecture": "Win64",
       "binaryDir": "${sourceDir}/build/win64-release",
       "cacheVariables": {
@@ -80,6 +80,10 @@
     {
       "name": "win32-release",
       "configurePreset": "win32-release"
+    },
+    {
+      "name": "win64-release",
+      "configurePreset": "win64-release"
     },
     {
       "name": "linux-x64-debug",
