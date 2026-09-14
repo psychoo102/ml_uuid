@@ -38,6 +38,18 @@
       }
     },
     {
+      "name": "win64-release",
+      "inherits": "base",
+      "displayName": "Windows 64-bit Release (MTA)",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "Win64",
+      "binaryDir": "${sourceDir}/build/win64-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static"
+      }
+    },
+    {
       "name": "linux-x64-debug",
       "inherits": "base",
       "displayName": "Linux x64 Debug",
