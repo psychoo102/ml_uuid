@@ -42,7 +42,7 @@
       "inherits": "base",
       "displayName": "Windows 64-bit Release (MTA)",
       "generator": "Visual Studio 18 2026",
-      "architecture": "Win64",
+      "architecture": "x64",
       "binaryDir": "${sourceDir}/build/win64-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
