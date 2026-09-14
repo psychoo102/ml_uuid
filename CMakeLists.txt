@@ -1,44 +1,17 @@
-file(GLOB CORE_SOURCES "*.cpp" "*.c")
+cmake_minimum_required(VERSION 3.16)
+project(ml_uuid VERSION 0.1 LANGUAGES CXX C)
 
-if(WIN32)
-    set(FINAL_SOURCES ${CORE_SOURCES})
-else()
-    file(GLOB LUA_IMPORTS_SOURCES "${CMAKE_SOURCE_DIR}/luaimports/*.cpp")
-    set(FINAL_SOURCES ${CORE_SOURCES} ${LUA_IMPORTS_SOURCES})
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Integracja z vcpkg (dla Boost::uuid)
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE AND DEFINED ENV{VCPKG_ROOT})
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 endif()
 
-add_library(ml_uuid SHARED ${FINAL_SOURCES})
+# ZnajdŸ Boost
+find_package(Boost REQUIRED COMPONENTS uuid)
 
-if(WIN32)
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        target_link_directories(ml_uuid PRIVATE "${CMAKE_SOURCE_DIR}/lib/x64")
-    else()
-        target_link_directories(ml_uuid PRIVATE "${CMAKE_SOURCE_DIR}/lib")
-    endif()
-    
-    target_link_libraries(ml_uuid PRIVATE lua5.1.lib)
-    
-    target_compile_definitions(ml_uuid PRIVATE 
-        WIN32 
-        LUA_BUILD_AS_DLL 
-        _CRT_SECURE_NO_WARNINGS
-    )
-else()
-    set_target_properties(ml_uuid PROPERTIES 
-        PREFIX "" 
-        LINK_FLAGS "-Wl,--unresolved-symbols=ignore-all"
-    )
-    target_link_libraries(ml_uuid PRIVATE dl atomic m)
-endif()
-
-target_include_directories(ml_uuid PRIVATE 
-    "${CMAKE_SOURCE_DIR}/include"
-    "${CMAKE_SOURCE_DIR}/luaimports"
-)
-
-target_link_libraries(ml_uuid PRIVATE Boost::uuid)
-
-set_target_properties(ml_uuid PROPERTIES 
-    PREFIX "" 
-    OUTPUT_NAME "ml_uuid"
-)
+# Dodaj tylko folder src. 
+# Folder luaimports zostanie obs³u¿ony warunkowo wewn¹trz src/CMakeLists.txt
+add_subdirectory(src)
