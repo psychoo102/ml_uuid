@@ -10,7 +10,11 @@ endif()
 add_library(ml_uuid SHARED ${FINAL_SOURCES})
 
 if(WIN32)
-    target_link_directories(ml_uuid PRIVATE "${CMAKE_SOURCE_DIR}/lib")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        target_link_directories(ml_uuid PRIVATE "${CMAKE_SOURCE_DIR}/lib/x64")
+    else()
+        target_link_directories(ml_uuid PRIVATE "${CMAKE_SOURCE_DIR}/lib")
+    endif()
     
     target_link_libraries(ml_uuid PRIVATE lua5.1.lib)
     

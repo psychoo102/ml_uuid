@@ -9,9 +9,9 @@ if(NOT DEFINED CMAKE_TOOLCHAIN_FILE AND DEFINED ENV{VCPKG_ROOT})
     set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 endif()
 
-# ZnajdŸ Boost
+# ZnajdÅ¸ Boost
 find_package(Boost REQUIRED COMPONENTS uuid)
 
 # Dodaj tylko folder src. 
-# Folder luaimports zostanie obs³u¿ony warunkowo wewn¹trz src/CMakeLists.txt
+# Folder luaimports zostanie obsÂ³uÂ¿ony warunkowo wewnÂ¹trz src/CMakeLists.txt
 add_subdirectory(src)
