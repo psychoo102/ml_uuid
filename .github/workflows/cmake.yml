@@ -20,6 +20,11 @@ jobs:
             artifact_name: "ml_uuid-win32"
             extension: ".dll"
 
+          - os: windows-latest
+            preset: win64-release
+            artifact_name: "ml_uuid-win64"
+            extension: ".dll"
+
           - os: ubuntu-latest
             preset: linux-x64-release
             artifact_name: "ml_uuid-linux-x64"
