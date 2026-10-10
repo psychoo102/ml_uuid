@@ -1,17 +1,16 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.21)
+
+# The toolchain must be selected before project() initializes compilers.
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE AND DEFINED ENV{VCPKG_ROOT})
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE FILEPATH "")
+endif()
+
 project(ml_uuid VERSION 1.1.2 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Integracja z vcpkg (dla Boost::uuid)
-if(NOT DEFINED CMAKE_TOOLCHAIN_FILE AND DEFINED ENV{VCPKG_ROOT})
-    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-endif()
-
-# ZnajdŸ Boost
-find_package(Boost REQUIRED COMPONENTS uuid)
-
-# Dodaj tylko folder src. 
-# Folder luaimports zostanie obs³u¿ony warunkowo wewn¹trz src/CMakeLists.txt
+find_package(Boost 1.86 REQUIRED COMPONENTS uuid)
+find_package(Threads REQUIRED)
 add_subdirectory(src)

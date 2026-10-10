@@ -26,6 +26,8 @@ bool ms_bInitWorked = false;
 // Initialisation function (module entrypoint)
 MTAEXPORT bool InitModule ( ILuaModuleManager10 *pManager, char *szModuleName, char *szAuthor, float *fVersion )
 {
+    // Modified for ml_uuid: reset lifecycle state before every initialization.
+    ms_bInitWorked = false;
 	pModuleManager = pManager;
 
 	// Set the module info
@@ -63,5 +65,7 @@ MTAEXPORT bool DoPulse()
 
 MTAEXPORT bool ShutdownModule ( void )
 {
+    ms_bInitWorked = false;
+    pModuleManager = NULL;
 	return true;
 }

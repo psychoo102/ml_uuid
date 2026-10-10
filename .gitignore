@@ -34,3 +34,10 @@
 /x64
 /build
 /vcpkg_installed
+
+# User-specific Visual Studio state
+*.aps
+*.vcxproj.user
+CMakeUserPresets.json
+/Release
+/Win32
