@@ -119,7 +119,7 @@ not proof that collisions are impossible. Repeat on each supported platform,
 including resource restarts and module reloads.
 
 See [release preparation review](docs/release-review.md) for outstanding blockers.
-CI changes and binary publication are a separate step.
+See [release workflow](docs/releasing.md) for tag-triggered binary publication.
 
 ## Contributing
 
@@ -136,3 +136,14 @@ permissive until the MTA SDK provenance and license are resolved.
 
 See [third-party notices](THIRD_PARTY_NOTICES.md). No new release should be
 published before that review and the platform checks are complete.
+
+## Release assets
+
+New tag-triggered releases built with the updated workflow contain
+`ml_uuid-win32.dll`, `ml_uuid-win64.dll`, and `ml_uuid-linux-x64.so`.
+Rename the selected Windows file to `ml_uuid.dll` or the Linux file to
+`ml_uuid.so` before installing it. Names in the existing v1.1.2 table above
+refer to that historical release.
+
+Download `ml_uuid-notices.zip` with the binary and retain the notices when
+redistributing it. `SHA256SUMS` covers all three binaries and the notices archive.
