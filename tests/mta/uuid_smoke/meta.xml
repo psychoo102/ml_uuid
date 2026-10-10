@@ -1,0 +1,4 @@
+<meta>
+    <info author="psychoo102" name="ml_uuid smoke test" type="script" />
+    <script src="server.lua" type="server" />
+</meta>

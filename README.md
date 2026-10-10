@@ -1,116 +1,138 @@
-﻿# ml_uuid 💎
+# ml_uuid
 
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey)
-![License](https://img.shields.io/badge/license-MIT-blue)
-![C++](https://img.shields.io/badge/language-C%2B%2B17-orange)
-![MTA:SA](https://img.shields.io/badge/MTA%3ASA-Module-brightgreen)
+Server-side UUID v4 and v7 generation for Multi Theft Auto: San Andreas.
+The module exposes two Lua functions backed by Boost.UUID.
 
-`ml_uuid` is a high-performance C++ module for **Multi Theft Auto: San Andreas** that provides fast, reliable, and modern UUID generation.  
-It is built with cross-platform CMake Presets and offers both random (v4) and time-sortable (v7) identifiers.
+## Lua API
 
----
+| Function | Success | Failure |
+| --- | --- | --- |
+| `uuidv4()` | A lowercase, 36-character UUID v4 string | `nil, "UUID generation failed"` |
+| `uuidv7()` | A lowercase, 36-character UUID v7 string | `nil, "UUID generation failed"` |
 
-## 🚀 Why ml_uuid?
-
-Lua-based UUID generators often rely on weak randomness or slow math libraries.  
-`ml_uuid` solves this by using **Boost::uuid** and native C++17 performance:
-
-✔️ **uuidv4()** – Cryptographically strong random identifiers  
-✔️ **uuidv7()** – Modern, time-ordered UUIDs standardized in 2024  
-✔️ **Cross-platform** – Windows & Linux  
-✔️ **Lightweight** – No external runtime dependencies  
-✔️ **Drop-in module** for any MTA server
-
----
-
-## 📈 The UUIDv7 Advantage
-
-UUIDv7 includes a timestamp component, meaning values are **monotonically increasing**.
-
-This makes it perfect for:
-
-* Database primary keys  
-* Event logs  
-* Distributed systems  
-* Any place where you want both uniqueness and natural ordering
-
-Compared to `uuidv4()`, using `uuidv7()` for database inserts:
-
-* Reduces B-tree fragmentation  
-* Improves long-term indexing performance  
-* Speeds up inserts on large tables  
-
----
-
-## 🛠️ Installation
-
-1. Download the latest release from the **[Releases](../../releases)** page.
-2. Place the module file in your MTA server:
-   * **Windows:**  
-     `server/mods/deathmatch/modules/ml_uuid.dll`
-   * **Linux:**  
-     `server/mods/deathmatch/modules/ml_uuid.so`
-3. Enable the module in `mtaserver.conf`:
-
-```xml
-<module src="ml_uuid.dll" /> <!-- Use ml_uuid.so on Linux -->
-```
-
-## 📖 Lua API Reference
+Both functions take no arguments. Extra arguments are ignored. These are
+server-side module functions, available in resources after the module loads.
 
 ```lua
--- uuidv4()
--- Generates a random RFC 4122 Version 4 UUID.
--- Returns: string (example: f47ac10b-58cc-4372-a567-0e02b2c3d479)
-
-local sessionToken = uuidv4()
-
-
--- uuidv7()
--- Generates a sortable Version 7 UUID using timestamps and entropy.
--- Returns: string (example: 018c2f1a-5c21-7b18-8b21-4f3b25687a41)
-
-local userId = uuidv7()
-dbExec(conn, "INSERT INTO players (uid, name) VALUES (?, ?)", userId, "PlayerName")
+local vehicleId, err = uuidv7()
+if not vehicleId then
+    outputDebugString(err, 1)
+    return
+end
+dbExec(connection, "INSERT INTO vehicles (id) VALUES (?)", vehicleId)
 ```
 
-## 🧪 Building From Source
+UUIDs are identifiers. Generation does not check your database; enforce
+uniqueness with a primary key or UNIQUE constraint.
 
-This project uses **CMake** with presets for both Windows and Linux.
+### UUID v4 and v7
 
-Windows:
+- **v4** uses Boost's random generator, seeded from the platform entropy source.
+- **v7** embeds the Unix timestamp in milliseconds and is suitable for
+  time-oriented identifiers. It reveals approximate creation time.
+- Generator state is retained across calls and resource Lua VMs within one
+  loaded module. Access to each generator is synchronized.
+- v7 is not a global sequence across servers, module reloads, or restarts.
+  Boost's monotonicity guarantee requires a non-decreasing system clock,
+  at least millisecond clock resolution, and no more than 64 UUIDs per
+  microsecond. Do not use UUID order as a substitute for business event order.
+- This project does not claim that UUIDs are authentication secrets.
 
-```bash
+Reference: [Boost.UUID](https://www.boost.org/doc/libs/latest/libs/uuid/doc/html/uuid.html)
+and [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562.html).
+
+## Installation
+
+Choose a binary matching the **server process architecture**, not just the OS.
+The existing [v1.1.2 release](https://github.com/psychoo102/ml_uuid/releases/tag/v1.1.2)
+has these names; it predates the changes on this branch.
+
+| Platform | Existing release asset | Installed filename |
+| --- | --- | --- |
+| Windows x86 | `ml_uuid-win32.dll` | `ml_uuid.dll` |
+| Windows x64 | `ml_uuid-win64.dll` | `ml_uuid.dll` |
+| Linux x64 | `ml_uuid.so` | `ml_uuid.so` |
+
+Copy the selected DLL/SO into the modules directory for your server layout.
+For the traditional layout this is `mods/deathmatch/modules/` relative to
+the server root. Check your MTA distribution's module directory for x64 builds.
+Rename the Windows asset as shown above, then add to `mtaserver.conf`:
+
+```xml
+<module src="ml_uuid.dll" />
+```
+
+On Linux use `<module src="ml_uuid.so" />`.
+Restart the server, inspect the module load log, and run the smoke resource below.
+
+If loading fails, check architecture, configured filename, dependent libraries,
+and the working directory. The Linux importer currently looks for
+`x64/deathmatch.so` on x64 and `mods/deathmatch/deathmatch.so` on x86,
+relative to the process working directory. This loader still needs validation
+against the supported MTA distributions before the next release.
+
+## Building
+
+Requirements:
+
+- C++17 compiler and Boost.UUID **1.86 or newer**.
+- CMake 3.21+ for presets. The supplied Windows presets select
+  **Visual Studio 2026**, which requires **CMake 4.2+** and the C++ workload.
+- Ninja and a C/C++ toolchain for the Linux presets.
+- An installed and bootstrapped vcpkg checkout; set `VCPKG_ROOT` to its path.
+  Presets use this checkout. The repository does not install vcpkg automatically.
+
+Windows x86:
+
+```powershell
 cmake --preset win32-release
 cmake --build --preset win32-release
 ```
 
-Linux:
+For Windows x64 use `win64-release`. Windows build presets explicitly select
+Release and use the static MSVC runtime to match the vcpkg static triplets.
 
-```bash
+Linux x64:
+
+```sh
 cmake --preset linux-x64-release
 cmake --build --preset linux-x64-release
 ```
 
-### Requirements:
+Output is under `build/<preset>/src/` (plus `Release/` for Visual Studio).
+Use CMake as the maintained build entry point. The legacy Visual Studio project
+files remain in the repository but are not validated by this preparation.
 
-C++17
-Boost (UUID)
-vcpkg (handled automatically)
+Boost is header-only here; that does not eliminate system runtime dependencies.
+Check the actual artifact with `ldd`/`readelf` on Linux or
+`dumpbin /dependents` on Windows before distributing it.
 
-All presets are already included in the repository for convenience.
+## Verification
 
-## 🤝 Contributing
+Copy `tests/mta/uuid_smoke` into your server resources and start
+`uuid_smoke` after loading the module. It checks API availability, string format,
+version and variant bits, sample uniqueness, and the v7 timestamp.
 
-Contributions are welcome, whether it’s code, documentation, or improvements to the build system.
-Feature suggestions and bug reports with reproducible steps are especially appreciated.
+The test reports ordering regressions separately: ordering is conditional,
+and a clock adjustment can cause one. Sample uniqueness is a regression check,
+not proof that collisions are impossible. Repeat on each supported platform,
+including resource restarts and module reloads.
 
-## ⭐ Support the Project
+See [release preparation review](docs/release-review.md) for outstanding blockers.
+CI changes and binary publication are a separate step.
 
-If this module improved your server or workflow, consider starring the repository.
-It helps keep the project alive and discoverable.
+## Contributing
 
-## 📜 License
+Include your OS, server architecture and version, module version, reproduction
+steps, relevant logs, and whether you used a release binary or built from source.
+Changes to generation or loading should be tested on a real MTA server.
 
-Released under the MIT License.
-You may freely use it in both commercial and non-commercial projects.
+## Licensing
+
+Original project contributions are covered by the top-level MIT license.
+Bundled third-party code retains its own notices and terms; the complete
+distribution must not be described as unconditionally MIT or commercially
+permissive until the MTA SDK provenance and license are resolved.
+
+See [third-party notices](THIRD_PARTY_NOTICES.md). No new release should be
+published before that review and the platform checks are complete.

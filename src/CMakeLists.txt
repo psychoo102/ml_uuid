@@ -25,8 +25,7 @@ if(WIN32)
     )
 else()
     set_target_properties(ml_uuid PROPERTIES 
-        PREFIX "" 
-        LINK_FLAGS "-Wl,--unresolved-symbols=ignore-all"
+        PREFIX ""
     )
     target_link_libraries(ml_uuid PRIVATE dl atomic m)
 endif()
@@ -36,7 +35,7 @@ target_include_directories(ml_uuid PRIVATE
     "${CMAKE_SOURCE_DIR}/luaimports"
 )
 
-target_link_libraries(ml_uuid PRIVATE Boost::uuid)
+target_link_libraries(ml_uuid PRIVATE Boost::uuid Threads::Threads)
 
 set_target_properties(ml_uuid PROPERTIES 
     PREFIX "" 
