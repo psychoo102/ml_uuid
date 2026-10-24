@@ -20,8 +20,11 @@ The origin and build recipe for the checked-in `lib/lua5.1.lib` and
 
 ## Lua import shim
 
-`luaimports/luaimports.cpp` and `luaimports/luaimports.h` carry Alberto Alonso's
-2008 BSD-style notice. Retain those full notices in source distributions and
+`luaimports/luaimports.cpp` and `luaimports/luaimports.h` originate from
+[mta-mysql's Lua importer](https://github.com/multitheftauto/mtasa-modules/tree/master/mta-mysql/luaimports),
+part of the [MTA modules collection](https://github.com/multitheftauto/mtasa-modules).
+They carry Alberto Alonso's 2008 BSD-style notice. The copy in this module has
+been adapted (including diagnostic text). Retain those full notices in source distributions and
 reproduce them with binary packages. The full notice is reproduced below.
 
 Copyright (c) 2008, Alberto Alonso
@@ -53,23 +56,26 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 
-## MTA SDK provenance: unresolved
+## MTA Public SDK: upstream identified, commercial scope unresolved
 
-Several bundled headers and sources identify themselves as MTA SDK or
-`ml_base` code and refer to a package license which was missing here.
+The bundled `ml_base`-derived files (`src/ml_uuid.cpp`, `include/ml_uuid.h`,
+`include/Common.h`), `include/ILuaModuleManager.h` and the legacy
+`CLuaArgument`/`CLuaArguments` helpers trace to the
+[Multi Theft Auto Public SDK](https://github.com/multitheftauto/mtasa-blue/tree/master/Shared/publicsdk).
+The template and helpers were adapted for this project. The exact historical
+SDK commit used for the original copy is not established.
 
-The current upstream [Public SDK license](https://github.com/multitheftauto/mtasa-blue/blob/master/Shared/publicsdk/LICENSE)
-includes a restriction on commercial applications. A reference copy is
-included at [LICENSES/MTA-Public-SDK-reference.txt](LICENSES/MTA-Public-SDK-reference.txt).
-This reference is not proof that every bundled file came from that exact
-upstream version, nor does adding it resolve permission for commercial use.
+The separately licensed upstream
+[Public SDK LICENSE](https://github.com/multitheftauto/mtasa-blue/blob/master/Shared/publicsdk/LICENSE)
+explicitly excludes commercial applications. Its text is included at
+[LICENSES/MTA-Public-SDK-reference.txt](LICENSES/MTA-Public-SDK-reference.txt).
+The top-level MTA repository's GPLv3 does **not** by itself supersede this
+folder-specific license. Redistributing the code under the project's MIT file
+cannot remove upstream restrictions. The scope of permitted use in premium or
+otherwise commercial servers has not been confirmed by the rights holder.
 
-Before the next release:
-1. Record the source repository and revision for the imported SDK/template files.
-2. Check the license distributed with that revision.
-3. Resolve the commercial-use question with the upstream owner if that restriction applies.
-4. Preserve required notices and clearly mark altered SDK-derived source files.
-5. Include the applicable notices in every binary release package.
-
-Until this is resolved, do not claim that the whole distribution is MIT or
-unconditionally usable in commercial applications.
+See [docs/sdk-provenance.md](docs/sdk-provenance.md) for file-by-file links and
+remaining questions. Before advertising unrestricted commercial reuse, obtain
+authoritative clarification, confirm applicable versions and preserve source
+notices; if necessary, seek legal advice. Retain the required notices when
+redistributing the library.

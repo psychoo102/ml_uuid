@@ -13,4 +13,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(Boost 1.86 REQUIRED COMPONENTS uuid)
 find_package(Threads REQUIRED)
+include(CTest)
 add_subdirectory(src)
+
+if(BUILD_TESTING)
+    add_subdirectory(tests/native)
+endif()
