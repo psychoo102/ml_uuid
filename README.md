@@ -43,20 +43,18 @@ and [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562.html).
 
 ## Installation
 
-Choose a binary matching the **server process architecture**, not just the OS.
-The existing [v1.1.2 release](https://github.com/psychoo102/ml_uuid/releases/tag/v1.1.2)
-has these names; it predates the changes on this branch.
+Download the [current v1.1.3 release](https://github.com/psychoo102/ml_uuid/releases/tag/v1.1.3).
+Choose the binary matching the **server process architecture**, not just the OS.
 
-| Platform | Existing release asset | Installed filename |
-| --- | --- | --- |
-| Windows x86 | `ml_uuid-win32.dll` | `ml_uuid.dll` |
-| Windows x64 | `ml_uuid-win64.dll` | `ml_uuid.dll` |
-| Linux x64 | `ml_uuid.so` | `ml_uuid.so` |
+| Server platform | Release asset | Installed filename | Server module directory |
+| --- | --- | --- | --- |
+| Windows x86 | `ml_uuid-win32.dll` | `ml_uuid.dll` | `mods/deathmatch/modules/` |
+| Windows x64 | `ml_uuid-win64.dll` | `ml_uuid.dll` | `x64/modules/` |
+| Linux x64 | `ml_uuid-linux-x64.so` | `ml_uuid.so` | `x64/modules/` |
 
-Copy the selected DLL/SO into the modules directory for your server layout.
-For the traditional layout this is `mods/deathmatch/modules/` relative to
-the server root. Check your MTA distribution's module directory for x64 builds.
-Rename the Windows asset as shown above, then add to `mtaserver.conf`:
+These directories follow the traditional MTA server layout; verify against
+any custom distribution. Rename the downloaded binary as above, place it in
+the matching modules directory, and add to `mtaserver.conf`:
 
 ```xml
 <module src="ml_uuid.dll" />
@@ -109,6 +107,22 @@ Check the actual artifact with `ldd`/`readelf` on Linux or
 
 ## Verification
 
+Native tests compile the production UUID callback implementation against a
+minimal Lua API test double, without starting MTA. They exercise UUID v4/v7
+format and variant, timestamp sanity, sample uniqueness, retained generator
+state across Lua VMs, concurrent calls, null VM handling, and the C++
+exception-to-`nil, error` path. They run with CTest in CI for each build target.
+
+For a local configured build, run:
+
+```sh
+ctest --test-dir build/linux-x64-release --output-on-failure
+```
+
+Use the matching build preset on Windows and add `--build-config Release` for
+Visual Studio generators. These tests do **not** prove ABI compatibility with
+a running MTA process.
+
 Copy `tests/mta/uuid_smoke` into your server resources and start
 `uuid_smoke` after loading the module. It checks API availability, string format,
 version and variant bits, sample uniqueness, and the v7 timestamp.
@@ -134,16 +148,18 @@ Bundled third-party code retains its own notices and terms; the complete
 distribution must not be described as unconditionally MIT or commercially
 permissive until the MTA SDK provenance and license are resolved.
 
-See [third-party notices](THIRD_PARTY_NOTICES.md). No new release should be
-published before that review and the platform checks are complete.
+See [third-party notices](THIRD_PARTY_NOTICES.md) and the
+[SDK provenance review](docs/sdk-provenance.md). The MTA Public SDK excludes
+commercial applications under its own license; do not advertise the entire
+module as unconditionally MIT-licensed or commercially unrestricted. Resolve
+the applicability of that restriction before making such a claim.
 
 ## Release assets
 
-New tag-triggered releases built with the updated workflow contain
-`ml_uuid-win32.dll`, `ml_uuid-win64.dll`, and `ml_uuid-linux-x64.so`.
-Rename the selected Windows file to `ml_uuid.dll` or the Linux file to
-`ml_uuid.so` before installing it. Names in the existing v1.1.2 table above
-refer to that historical release.
+The current release supplies binaries for Windows x86, Windows x64 and Linux
+x64, a `SHA256SUMS` checksum file and `ml_uuid-notices.zip`. Rename the chosen
+binary to the installed filename in the table above. Keep the notices when
+redistributing binaries and verify the SHA-256 checksum for your download.
 
-Download `ml_uuid-notices.zip` with the binary and retain the notices when
-redistributing it. `SHA256SUMS` covers all three binaries and the notices archive.
+The v1.1.3 CI build passed, but testing the released files inside real MTA
+servers remains a separate compatibility step.
