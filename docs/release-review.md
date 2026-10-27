@@ -1,117 +1,86 @@
-# Public release preparation review
+# Release readiness review
 
-Reviewed main at `a4bb7ed6a78c80f65ad66c7ed7b9bad88baba4d6` on 2026-10-10.
-This is a source review and preparation branch, not a certified binary release.
-The GitHub connection supplied sources after direct git clone failed.
-No existing release binary was downloaded or executed.
+Updated on 2026-10-27 after reviewing main at
+`ae4b1dd772f42c255f9c3a216e2b8ccd5673a15c` and merged PR #5.
 
-## Fixed in this preparation
+## Supported targets
 
-| Finding | Change |
-| --- | --- |
-| New Boost generators were constructed and seeded on every Lua call; v7 conflict state was discarded | Reuse generators with synchronized access |
-| C++ generation/formatting exceptions could escape Lua callbacks | Return nil plus a stable error string |
-| A live std::string surrounded a Lua allocation call that can longjmp | Destroy non-trivial automatic objects before pushing to Lua |
-| Windows build presets defaulted to Debug even when named release | Set build preset configuration explicitly |
-| Linux debug/release shared one build directory | Separate directories |
-| vcpkg fallback selected after project() | Select before compiler initialization |
-| Boost version requirement unspecified despite v7 needing 1.86+ | Require Boost 1.86+ |
-| Static vcpkg CRT could differ from module CRT | Set matching MSVC runtime in Windows presets |
-| Linux linking suppressed all unresolved-symbol errors | Remove blanket suppression |
-| Manifest, CMake and module display versions diverged | Manifest now matches 1.1.2; MTA float API still displays 1.1 |
-| Initialization flag survived shutdown/reinitialization | Reset lifecycle state |
-| README omitted release asset renaming, architecture and failure behavior | Document these, build prerequisites and ordering limitations |
-| Third-party terms were obscured by blanket MIT claim | Add notices and flag unresolved SDK provenance |
-| Editor state was tracked | Remove .aps and .vcxproj.user; ignore future copies |
+Windows x86, Windows x64 and Linux x64. Linux x86 is outside the current
+support scope and is not a missing release target.
 
-## Remaining release blockers
+## Verified baseline
 
-### 1. SDK licensing and provenance (high priority)
+[Main CI run](https://github.com/psychoo102/ml_uuid/actions/runs/40178886852)
+passed on all three targets. Its logs confirm:
+- successful native compilation;
+- the native UUID callback regression executable passed;
+- all seven release-packaging tests passed;
+- distinctly named platform binaries were staged and uploaded.
 
-See THIRD_PARTY_NOTICES.md. Identify the exact original SDK/template revision.
-The upstream Public SDK reference excludes commercial applications; this cannot
-be overwritten by a project MIT file. Do not infer that premium servers are
-authorized until the applicable terms have been established.
+The callback tests cover UUID format, version, variant, v7 timestamp sanity,
+sample uniqueness, concurrent calls, persistent generator state across Lua
+states, null states and injected generation failures. They use a Lua test
+double and do not establish compatibility with a running MTA process.
 
-### 2. Build, ABI and real server loading (high priority)
+The owner reports that the module loads and works on Windows and Linux MTA
+servers. Exact server versions, architectures and tested binary revisions
+were not recorded. Treat this as manual confirmation for the tested setups;
+do not infer coverage of every supported target or restart/reload scenario.
 
-Build Windows x86, Windows x64 and Linux x64. Test in the specific MTA releases
-you intend to support. Verify exported entry points, process architecture,
-Lua imports and actual runtime dependencies.
-Use dumpbin /exports and /dependents on Windows, and nm -D, readelf and ldd
-on Linux. Do not link a different Lua VM simply to make compilation succeed.
+## Changes in this follow-up
 
-The existing Linux importer uses hard-coded relative deathmatch.so paths,
-requires many Lua symbols this module does not use, and never closes its dlopen
-reference (including failure paths). This needs integration-tested cleanup.
-Replacing lookup with a generic global dlsym can accidentally resolve the wrong
-Lua implementation; do not do so without checking the host loader behavior.
+The Linux importer now owns its temporary `dlopen(RTLD_NOLOAD)` reference
+with RAII. The reference is released on successful symbol resolution and
+on every missing-symbol return. The host keeps ownership of the running
+`deathmatch.so`; the importer does not load a second Lua implementation.
 
-### 3. Tests and CI (high priority, next stage)
+A Linux-only CTest exercises the production importer with wrapped dynamic
+loader calls. It checks successful imports, failure to acquire the core,
+missing symbols at early/middle/late import stages, and repeated attempts.
+This is a loader lifetime regression test, not a real MTA integration test.
+See this PR's CI results for validation of the follow-up itself; the baseline
+run above predates this change.
 
-There were no tests in the reviewed tree. The new MTA smoke resource covers
-format, version, variant, sample collisions and timestamp extraction. Run it
-on all targets and after restart/reload; report ordering separately because
-clock behavior matters.
+## Remaining follow-up
 
-Also add executable native regression tests for callback exception handling
-and persistent v7 state, preferably with a controllable clock/entropy source.
-These cannot be proven by inspecting code or a sample uniqueness test.
+### SDK terms and provenance
 
-Existing CI is intentionally unchanged. Findings for the next stage:
-- Verify runner CMake/VS availability for VS 2026 (requires CMake 4.2+).
-- Record and pin the vcpkg checkout; the manifest baseline alone does not pin the tool.
-- Two Windows jobs upload the same ml_uuid.dll asset name to one release.
-- A Linux artifact path glob is not proof that the module can load.
-- if-no-files-found: warn permits green jobs without a binary.
-- The release condition mentions a release event absent from the workflow triggers.
-- Release upload depends on a custom TOKEN secret; review minimal permissions
-  and use of GITHUB_TOKEN.
-- Publish only after every build/test succeeds, with distinct platform names,
-  checksums, notices and documented compatibility.
-- Do not let a partial matrix publish an apparently complete stable release.
+The current upstream Public SDK license excludes commercial applications.
+Project MIT licensing does not replace third-party terms. Exact historical
+SDK provenance and applicability to commercial/premium servers remain
+unresolved; see [SDK provenance](sdk-provenance.md) and
+[third-party notices](../THIRD_PARTY_NOTICES.md).
+Obtain clarification from the rights holder before claiming unrestricted
+commercial reuse. No such permission is asserted by this review.
 
-### 4. Existing releases (medium priority)
+### Runtime compatibility record
 
-v1.1.2 has empty release notes. Its Linux SO has the same SHA-256 digest as
-v1.1.1; this is observable asset metadata, not proof of corruption.
-Record whether reuse was intentional, and document which source revision and
-toolchain produced each artifact. The changes in this branch do not alter
-already published files.
+Record OS, architecture, MTA version, module commit/release and test results
+for each manually tested setup. Include resource restarts and module reloads
+when available. Inspect actual binary dependencies before expanding the
+Linux compatibility claim: a build on the CI runner alone does not establish
+compatibility with older glibc/libstdc++ installations.
 
-### 5. Legacy source and projects (medium priority)
+The importer still uses core paths relative to the process working directory
+and requires the legacy Lua symbol set. Custom layouts may fail cleanly even
+when the UUID callbacks themselves need only a few of these symbols.
 
-Unused root uuid.h and uuid.hpp remain. The Visual Studio project still lists
-both and has separate toolset/runtime settings; CMake is documented as the
-maintained entry point. Remove or reconcile legacy build files after platform
-validation rather than claiming both paths are supported.
+### Published release versus main
 
-CLuaArgument and CLuaArguments are compiled by the source glob but unused by
-the UUID callbacks:
-- String self-assignment clears the source before copying.
-- Argument-vector self-assignment empties its own contents.
-- Assignment operators return the source rather than *this.
-- Lua string copying uses strlen and loses embedded NUL bytes.
-- Call handles only some lua_pcall failures and leaves error values on the stack.
-Prefer removing these helpers from this module after checking that they have
-no consumers. These are latent helper bugs, not current uuidv4/v7 exploits.
+The current `v1.1.3` tag points to
+`7668fda84ac0e5f0b31424955cf427b808d02ee3`, before PR #5.
+That PR added tests and provenance documentation without changing the UUID
+callback implementation. A future release should include this follow-up and
+its successful CI results. This review does not retag or replace old assets.
 
-### 6. Module initialization diagnostics (medium priority)
+### Optional maintenance
 
-RegisterFunction return values are ignored. Failure could leave only part of
-the API registered. Add useful logs and integration tests for registration
-failure. Bound metadata copies are safe for the present short constants, but
-future longer names need explicit termination. The MTA float version field
-cannot represent semantic version 1.1.2; use release/package metadata for it.
-
-## Validation status
-
-- Reviewed core callbacks, module lifecycle, CMake, presets, manifest,
-  legacy argument helpers, Lua import code, README, license notices and release metadata.
-- CMake --list-presets=all executed successfully using the installed VS-bundled CMake.
-- JSON structure and change scope checked before creating the draft PR.
-- Native compilation, linked-artifact inspection, failure injection and MTA
-  smoke tests have NOT been run in this task.
-- CI workflow was not modified.
-- Do not merge/publish as a fully validated release until the blockers above
-  are closed.
+- Remove unused CLuaArgument/CLuaArguments helpers and legacy root UUID
+  implementations after checking consumers; they are not used by callbacks.
+- CMake is the maintained build entry point; legacy Visual Studio project
+  files are not validated as an alternative release pipeline.
+- Check registration return values and improve partial-registration logging.
+- The MTA float version remains `1.1`; package/release metadata carries the
+  full version.
+- Update the vcpkg binary-cache setup, whose removed `x-gha` backend currently
+  emits a warning without failing these builds.

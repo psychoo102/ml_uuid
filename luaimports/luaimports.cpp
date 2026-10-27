@@ -28,6 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <dlfcn.h>
+#include <memory>
 #include <stdarg.h>
 #include "Common.h"
 #include "ILuaModuleManager.h"
@@ -227,6 +228,10 @@ bool ImportLua()
     pModuleManager->ErrorPrintf("[UUID] Unable to open deathmatch.so: %s\n", dlerror());
     return false;
   }
+
+  // RTLD_NOLOAD still acquires a reference. Release our reference on success
+  // and every early return; the running MTA host owns the core lifetime.
+  const std::unique_ptr<void, decltype(&dlclose)> coreReference(dl, &dlclose);
 
   /*
    ** state manipulation
