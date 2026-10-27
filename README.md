@@ -66,8 +66,10 @@ Restart the server, inspect the module load log, and run the smoke resource belo
 If loading fails, check architecture, configured filename, dependent libraries,
 and the working directory. The Linux importer currently looks for
 `x64/deathmatch.so` on x64 and `mods/deathmatch/deathmatch.so` on x86,
-relative to the process working directory. This loader still needs validation
-against the supported MTA distributions before the next release.
+relative to the process working directory. The owner has confirmed loading and operation on Windows and Linux servers.
+Exact MTA versions and architectures for those manual tests were not recorded;
+this is not a claim that every distribution has been tested. The importer
+releases its temporary core-library reference after each import attempt.
 
 ## Building
 
